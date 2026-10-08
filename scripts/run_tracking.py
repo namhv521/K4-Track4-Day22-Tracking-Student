@@ -50,7 +50,8 @@ def iter_frames(source: Path) -> Iterator[Tuple[int, np.ndarray]]:
         source: Thư mục chứa ảnh ``.jpg`` đặt tên tăng dần, hoặc file ``.mp4``.
 
     Yields:
-        Cặp ``(frame_index, frame_bgr)``. ``frame_index`` bắt đầu từ 0.
+        Cặp ``(frame_index, frame_bgr)``. Ảnh có tên số giữ số frame gốc trừ 1;
+        tên khác và file video dùng chỉ số tăng dần từ 0.
 
     Raises:
         FileNotFoundError: Khi thư mục không có ảnh ``.jpg``, hoặc không mở được file video.
@@ -60,7 +61,8 @@ def iter_frames(source: Path) -> Iterator[Tuple[int, np.ndarray]]:
         if not frame_paths:
             raise FileNotFoundError(f"Không tìm thấy ảnh .jpg trong {source}")
         for i, path in enumerate(frame_paths):
-            yield i, cv2.imread(str(path))
+            frame_index = int(path.stem) - 1 if path.stem.isdecimal() else i
+            yield frame_index, cv2.imread(str(path))
     else:
         cap = cv2.VideoCapture(str(source))
         if not cap.isOpened():

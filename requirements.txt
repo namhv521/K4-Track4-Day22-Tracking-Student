@@ -11,3 +11,5 @@ scipy
 filterpy
 matplotlib
 pytest
+ipykernel
+setuptools<81  # BoxMOT dùng pkg_resources.

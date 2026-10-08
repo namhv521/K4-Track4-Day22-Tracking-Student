@@ -42,3 +42,9 @@ def test_video_without_labels_still_passes(tmp_path: Path) -> None:
 def test_practice_video_without_labels_fails(tmp_path: Path) -> None:
     _lab_tree(tmp_path, with_practice_gt=False)
     assert check(tmp_path) is False
+
+
+def test_missing_numbered_frame_fails(tmp_path: Path) -> None:
+    _lab_tree(tmp_path)
+    _touch_jpg(tmp_path / "video_4" / "img1", "000003.jpg")
+    assert check(tmp_path) is False

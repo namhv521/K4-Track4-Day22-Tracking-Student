@@ -114,6 +114,7 @@ def run_trackeval(trackeval_root: Path, run_name: str, benchmark: str, split: st
         "--TRACKERS_TO_EVAL", run_name,
         "--METRICS", "HOTA", "CLEAR", "Identity",
         "--USE_PARALLEL", "False",
+        "--PLOT_CURVES", "False",
     ]
     print("Đang chấm video luyện:\n  " + " ".join(cmd) + "\n")
     subprocess.run(cmd, check=True)

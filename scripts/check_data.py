@@ -29,12 +29,18 @@ def check(lab_data_root: Path) -> bool:
         lab_data_root: Thư mục lab_data giảng viên phát.
 
     Returns:
-        True nếu cả năm video có ảnh và video_1 có file nhãn.
+        True nếu cả năm video có ảnh, tên ảnh số không bị bỏ số,
+        và video_1 có file nhãn.
     """
     all_ok = True
     for name in VIDEOS:
         img_dir = lab_data_root / name / "img1"
-        n_imgs = len(list(img_dir.glob("*.jpg"))) if img_dir.exists() else 0
+        images = list(img_dir.glob("*.jpg")) if img_dir.exists() else []
+        n_imgs = len(images)
+        has_gaps = False
+        if images and all(path.stem.isdecimal() for path in images):
+            numbers = sorted(int(path.stem) for path in images)
+            has_gaps = any(number != index for index, number in enumerate(numbers, 1))
         gt_file = lab_data_root / name / "gt" / "gt.txt"
         has_gt = gt_file.exists()
         if name == PRACTICE_VIDEO:
@@ -43,6 +49,9 @@ def check(lab_data_root: Path) -> bool:
         else:
             ok = n_imgs > 0
             gt_note = "không có nhãn (đúng)" if not has_gt else "có nhãn — không dùng để tự chấm"
+        if has_gaps:
+            ok = False
+            gt_note += "; THIẾU số thứ tự ảnh"
         all_ok &= ok
         status = "OK   " if ok else "THIẾU"
         print(f"[{status}] {name:8s}  {n_imgs:4d} ảnh  {gt_note}  — {CONTEXT[name]}")
